@@ -18,14 +18,12 @@ async function deploy() {
     await client.ensureDir(remotePath);
     await client.clearWorkingDir();
 
-    const filesToUpload = ["index.html", "robots.txt", "sitemap.xml", "favicon.svg"];
-    for (const file of filesToUpload) {
-      const localPath = path.join(__dirname, file);
-      await client.uploadFrom(localPath, file);
-      console.log(`Uploaded: ${file}`);
-    }
+    // Upload construction.html AS index.html
+    const localPath = path.join(__dirname, "construction.html");
+    await client.uploadFrom(localPath, "index.html");
+    console.log("Uploaded: construction.html -> index.html");
 
-    console.log("Deploy complete!");
+    console.log("Deploy 'Site en travaux' complete!");
   } catch (err) {
     console.error("Deploy failed:", err.message);
     process.exit(1);

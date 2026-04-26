@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEP — Site en travaux</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --noir: #080c14;
+  --bleu: #162040;
+  --or: #c9a84c;
+  --or-clair: #f0d080;
+}
+body {
+  background: var(--noir);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+}
+.bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(201,168,76,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(22,32,64,0.6) 0%, transparent 50%),
+    var(--noir);
+  z-index: 0;
+}
+
+/* Ampoule qui clignote */
+.bulb {
+  position: relative;
+  margin-bottom: 3rem;
+  animation: flicker 4s infinite;
+  z-index: 1;
+}
+.bulb-svg { width: 80px; height: 110px; }
+.bulb-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(255,210,80,0.25) 0%, transparent 60%);
+  animation: flicker 4s infinite;
+  pointer-events: none;
+}
+@keyframes flicker {
+  0%, 85%, 100% { opacity: 1; }
+  88% { opacity: 0.6; }
+  91% { opacity: 1; }
+  94% { opacity: 0.4; }
+  97% { opacity: 0.9; }
+}
+
+/* Contenu */
+.content {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.tagline {
+  font-size: 0.7rem;
+  letter-spacing: 0.45em;
+  color: var(--or);
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+}
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.title em {
+  color: var(--or);
+  font-style: italic;
+}
+.subtitle {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.75;
+  margin-bottom: 3rem;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Contact */
+.contact-box {
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 4px;
+  padding: 2rem;
+  background: rgba(201,168,76,0.03);
+  max-width: 420px;
+  margin: 0 auto;
+}
+.contact-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  color: var(--or);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.contact-phone {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--or-clair);
+  text-decoration: none;
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+.contact-phone:hover { color: #fff; }
+.contact-email {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+}
+.contact-email:hover { color: var(--or); }
+
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.15em;
+  z-index: 1;
+}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="bulb">
+  <div class="bulb-glow"></div>
+  <svg class="bulb-svg" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <line x1="50" y1="0" x2="50" y2="25" stroke="rgba(120,100,60,0.5)" stroke-width="2"/>
+    <rect x="40" y="25" width="20" height="18" rx="2" fill="#c8a040" stroke="rgba(60,45,15,0.4)" stroke-width="0.5"/>
+    <line x1="41" y1="30" x2="59" y2="30" stroke="rgba(60,45,15,0.35)" stroke-width="0.6"/>
+    <line x1="41" y1="34" x2="59" y2="34" stroke="rgba(60,45,15,0.35)" stroke-width="0.6"/>
+    <line x1="41" y1="38" x2="59" y2="38" stroke="rgba(60,45,15,0.35)" stroke-width="0.6"/>
+    <path d="M38,43 Q38,55 30,75 Q25,95 35,115 Q45,128 50,130 Q55,128 65,115 Q75,95 70,75 Q62,55 62,43"
+          fill="rgba(255,210,80,0.12)" stroke="rgba(220,180,80,0.25)" stroke-width="0.8"/>
+    <path d="M45,48 L42,95 Q44,110 50,115" fill="none" stroke="rgba(255,185,50,0.9)" stroke-width="0.8" filter="url(#glow)"/>
+    <path d="M50,48 L50,115" fill="none" stroke="rgba(255,185,50,0.9)" stroke-width="0.8"/>
+    <path d="M55,48 L58,95 Q56,110 50,115" fill="none" stroke="rgba(255,185,50,0.9)" stroke-width="0.8"/>
+    <defs>
+      <filter id="glow"><feGaussianBlur stdDeviation="1.5"/></filter>
+    </defs>
+    <ellipse cx="50" cy="85" rx="12" ry="25" fill="rgba(255,195,60,0.3)"/>
+    <ellipse cx="50" cy="85" rx="22" ry="40" fill="rgba(255,185,40,0.1)"/>
+  </svg>
+</div>
+
+<div class="content">
+  <div class="logo">CEP</div>
+  <div class="tagline">Compagnie d'Électricité Parisienne</div>
+
+  <h1 class="title">Site en <em>travaux</em></h1>
+  <p class="subtitle">
+    Notre site fait peau neuve. Nos équipes restent bien sûr à votre disposition pour toutes vos interventions électriques.
+  </p>
+
+  <div class="contact-box">
+    <div class="contact-label">Nous contacter</div>
+    <a href="tel:0156041996" class="contact-phone">01 56 04 19 96</a>
+    <a href="mailto:contact@cep75.fr" class="contact-email">contact@cep75.fr</a>
+  </div>
+</div>
+
+<div class="footer">SPÉCIALISTE ÉLECTRIQUE CHR · PARIS & ÎLE-DE-FRANCE</div>
+
+</body>
+</html>
