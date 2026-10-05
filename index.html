@@ -1445,18 +1445,55 @@ footer { background:#060a10; padding:4rem 5vw 2rem; border-top:1px solid rgba(25
   }
 
   /* ── Formulaire ── */
-  function envoyerDevis(e) {
-    e.preventDefault();
-    const btn = e.target.querySelector('button[type=submit]');
-    btn.textContent = 'Message envoyé ✓';
-    btn.style.background = '#2d5a2d';
+  async function posterDemande(fd) {
+    try {
+      const r = await fetch('envoyer.php', { method: 'POST', body: fd });
+      const j = await r.json();
+      return { ok: !!j.ok, msg: j.msg || '' };
+    } catch (err) {
+      return { ok: false, msg: '' };
+    }
+  }
+
+  function retourBouton(btn, libelle, resultat) {
+    if (resultat.ok) {
+      btn.textContent = 'Message envoyé ✓';
+      btn.style.background = '#2d5a2d';
+      btn.style.color = '#fff';
+      return true;
+    }
+    btn.textContent = resultat.msg || 'Échec : appelez le 01 56 04 19 96';
+    btn.style.background = '#7a2a22';
     btn.style.color = '#fff';
-    setTimeout(() => {
-      btn.textContent = 'Envoyer ma demande';
-      btn.style.background = '';
-      btn.style.color = '';
-      e.target.reset();
-    }, 4000);
+    setTimeout(() => { btn.textContent = libelle; btn.style.background = ''; btn.style.color = ''; btn.disabled = false; }, 6000);
+    return false;
+  }
+
+  async function envoyerDevis(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('button[type=submit]');
+    const libelle = 'Envoyer ma demande';
+    const fd = new FormData();
+    fd.append('type', 'devis');
+    form.querySelectorAll('.form-group').forEach(g => {
+      const lab = g.querySelector('label');
+      const c = g.querySelector('input, select, textarea');
+      if (!lab || !c) return;
+      const k = lab.textContent.toLowerCase();
+      if (k.includes('tablissement')) fd.append('etab', c.value);
+      else if (k.includes('phone')) fd.append('tel', c.value);
+      else if (k.includes('mail')) fd.append('email', c.value);
+      else if (k.includes('type')) fd.append('probleme', c.value);
+      else if (k.includes('message')) fd.append('message', c.value);
+      else if (k.includes('nom')) fd.append('nom', c.value);
+    });
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+    const res = await posterDemande(fd);
+    if (retourBouton(btn, libelle, res)) {
+      setTimeout(() => { btn.textContent = libelle; btn.style.background = ''; btn.style.color = ''; btn.disabled = false; form.reset(); }, 4000);
+    }
   }
 
   /* ── App mobile navigation ── */
@@ -1972,18 +2009,30 @@ footer { background:#060a10; padding:4rem 5vw 2rem; border-top:1px solid rgba(25
     }
   }
 
-  function envoyerDepannage() {
-    const btn = event.target;
-    btn.textContent = 'Demande envoyée ✓';
-    btn.style.background = '#2d5a2d';
-    btn.style.color = '#fff';
-    setTimeout(() => {
-      btn.textContent = 'Envoyer ma demande';
-      btn.style.background = '';
-      btn.style.color = '';
-      document.getElementById('depannage-form').reset();
-      document.getElementById('dep-alerte').style.display = 'none';
-    }, 4000);
+  async function envoyerDepannage(ev) {
+    const btn = (ev && (ev.currentTarget || ev.target)) || document.querySelector('#depannage-form + button, button[onclick^="envoyerDepannage"]');
+    const libelle = 'Envoyer ma demande';
+    const sel = id => { const el = document.getElementById(id); return el && el.selectedIndex >= 0 && el.value ? el.options[el.selectedIndex].text : ''; };
+    const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+    const fd = new FormData();
+    fd.append('type', 'depannage');
+    fd.append('probleme', sel('dep-type'));
+    fd.append('urgence', sel('dep-urgence'));
+    fd.append('etab', val('dep-etab'));
+    fd.append('adresse', val('dep-adresse'));
+    fd.append('tel', val('dep-tel'));
+    fd.append('message', val('dep-details'));
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+    const res = await posterDemande(fd);
+    if (retourBouton(btn, libelle, res)) {
+      btn.textContent = 'Demande envoyée ✓';
+      setTimeout(() => {
+        btn.textContent = libelle; btn.style.background = ''; btn.style.color = ''; btn.disabled = false;
+        document.getElementById('depannage-form').reset();
+        document.getElementById('dep-alerte').style.display = 'none';
+      }, 4000);
+    }
   }
 
   window.addEventListener('popstate', function(e) {
@@ -2346,7 +2395,7 @@ footer { background:#060a10; padding:4rem 5vw 2rem; border-top:1px solid rgba(25
         <a href="tel:0156041996" style="display:block;font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--or);text-decoration:none;margin-top:0.5rem;font-weight:700;">01 56 04 19 96</a>
       </div>
 
-      <button type="button" class="btn btn-gold btn-full" onclick="envoyerDepannage()">Envoyer ma demande</button>
+      <button type="button" class="btn btn-gold btn-full" onclick="envoyerDepannage(event)">Envoyer ma demande</button>
 
     </form>
 

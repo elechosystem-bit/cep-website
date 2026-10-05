@@ -42,6 +42,25 @@ h1 em{font-style:italic;font-weight:400;color:#fff}
 .btn{display:flex;align-items:center;justify-content:center;min-height:50px;padding:.8rem 1.2rem;border-radius:10px;text-decoration:none;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.8rem;background:linear-gradient(135deg,#e8c96a,#b8942f);color:var(--noir)}
 .btn.contour{background:transparent;border:1px solid var(--or);color:var(--or-pale)}
 .btn:focus-visible,.retour:focus-visible{outline:2px solid var(--or-clair);outline-offset:3px}
+.rapport{display:flex;flex-direction:column;gap:14px;border:1.5px solid var(--or);border-radius:16px;padding:18px;background:rgba(8,12,20,.5)}
+.rapport h2{margin:0;font-family:var(--serif);font-size:1.3rem;color:var(--or-pale)}
+.cache{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.piege{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.depot{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer;border:2px dashed var(--or);border-radius:14px;padding:24px 14px;background:rgba(201,168,76,.08);transition:background .2s,border-color .2s}
+.depot strong{font-family:var(--serif);font-size:1.15rem;color:var(--or-pale)}
+.depot span{font-size:.9rem;color:var(--doux)}
+.depot.survol,.depot:focus-visible{background:rgba(201,168,76,.22);border-color:var(--or-clair);outline:none}
+.liste{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.liste li{display:flex;align-items:center;gap:10px;border:1px solid rgba(201,168,76,.35);border-radius:10px;padding:8px 10px;font-size:.9rem;word-break:break-all}
+.liste button{margin-left:auto;flex:none;min-width:44px;min-height:44px;background:none;border:0;color:var(--or-pale);font-size:1.3rem;cursor:pointer}
+.champs{display:grid;gap:12px}
+.champs label{display:flex;flex-direction:column;gap:5px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--or);font-weight:600}
+.champs input{font:inherit;font-size:16px;letter-spacing:0;text-transform:none;font-weight:400;padding:12px 13px;border:1px solid rgba(201,168,76,.45);border-radius:10px;background:rgba(8,12,20,.6);color:#fff;min-height:48px}
+.champs input:focus-visible{outline:2px solid var(--or-clair);outline-offset:2px}
+button.btn{border:0;cursor:pointer;font-family:inherit}
+button.btn:disabled{opacity:.6;cursor:wait}
+.retour-msg{margin:0;min-height:1.4em;font-size:.95rem}
+.retour-msg.ok{color:#8fe3a5}.retour-msg.ko{color:#ff9a8f}
 </style>
 </head>
 <body>
@@ -69,8 +88,85 @@ h1 em{font-style:italic;font-weight:400;color:#fff}
     <div><strong>48 h</strong><span>délai d'intervention</span></div>
   </div>
 
-  <a class="btn" href="index.html#contact">Envoyer mon rapport</a>
+  <form id="rapport" class="rapport" novalidate>
+    <h2>Envoyez-nous votre rapport</h2>
+    <label class="depot" id="depot" for="fichiers" tabindex="0">
+      <strong>Glissez votre rapport ici</strong>
+      <span>ou touchez pour le choisir : PDF ou photos, 12 Mo maximum</span>
+    </label>
+    <input id="fichiers" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,image/*,application/pdf" class="cache">
+    <ul id="liste" class="liste" aria-live="polite"></ul>
+    <div class="champs">
+      <label>Votre nom<input name="nom" autocomplete="name" required></label>
+      <label>Établissement<input name="etab" autocomplete="organization"></label>
+      <label>Téléphone<input name="tel" type="tel" autocomplete="tel" required></label>
+      <label>Email (facultatif)<input name="email" type="email" autocomplete="email"></label>
+      <input name="site_web" tabindex="-1" autocomplete="off" aria-hidden="true" class="piege">
+    </div>
+    <button class="btn" type="submit" id="envoyer">Envoyer mon rapport</button>
+    <p id="retour" class="retour-msg" role="status"></p>
+  </form>
   <a class="btn contour" href="tel:0156041996">Appeler le 01 56 04 19 96</a>
 </main>
+<script>
+(function(){
+  var MAX=12*1024*1024, MAXN=6, EXT=/\.(pdf|jpe?g|png|webp|heic)$/i;
+  var fichiers=[], depot=document.getElementById('depot'), input=document.getElementById('fichiers'),
+      liste=document.getElementById('liste'), retour=document.getElementById('retour'),
+      form=document.getElementById('rapport'), bouton=document.getElementById('envoyer');
+  function taille(n){return n>1048576?(n/1048576).toFixed(1)+' Mo':Math.max(1,Math.round(n/1024))+' Ko';}
+  function message(t,cls){retour.textContent=t;retour.className='retour-msg '+(cls||'');}
+  function afficher(){
+    liste.innerHTML='';
+    fichiers.forEach(function(f,i){
+      var li=document.createElement('li'),nom=document.createElement('span'),x=document.createElement('button');
+      nom.textContent=f.name+' ('+taille(f.size)+')';
+      x.type='button';x.textContent='\u00d7';x.setAttribute('aria-label','Retirer '+f.name);
+      x.onclick=function(){fichiers.splice(i,1);afficher();};
+      li.appendChild(nom);li.appendChild(x);liste.appendChild(li);
+    });
+  }
+  function ajouter(fl){
+    message('');
+    Array.prototype.forEach.call(fl,function(f){
+      if(!EXT.test(f.name)){message('Formats acceptés : PDF, JPG, PNG, WEBP, HEIC.','ko');return;}
+      if(fichiers.length>=MAXN){message('Six fichiers maximum.','ko');return;}
+      var total=fichiers.reduce(function(a,b){return a+b.size;},0)+f.size;
+      if(total>MAX){message('Fichiers trop lourds : 12 Mo maximum au total.','ko');return;}
+      fichiers.push(f);
+    });
+    afficher();
+  }
+  input.addEventListener('change',function(){ajouter(input.files);input.value='';});
+  depot.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click();}});
+  ['dragenter','dragover'].forEach(function(t){depot.addEventListener(t,function(e){e.preventDefault();depot.classList.add('survol');});});
+  ['dragleave','drop'].forEach(function(t){depot.addEventListener(t,function(e){e.preventDefault();depot.classList.remove('survol');});});
+  depot.addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files)ajouter(e.dataTransfer.files);});
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(!fichiers.length){message("Ajoutez votre rapport avant d'envoyer.",'ko');return;}
+    var nom=form.nom.value.trim(),tel=form.tel.value.trim();
+    if(!nom||!tel){message('Indiquez votre nom et votre téléphone.','ko');return;}
+    var fd=new FormData();
+    fd.append('type','rapport');
+    ['nom','etab','tel','email','site_web'].forEach(function(k){fd.append(k,form[k].value);});
+    fichiers.forEach(function(f){fd.append('fichiers[]',f,f.name);});
+    bouton.disabled=true;bouton.textContent='Envoi en cours\u2026';message('');
+    fetch('envoyer.php',{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(j){
+      if(j&&j.ok){
+        message('Rapport reçu. Nous vous répondons sous 24 h.','ok');
+        fichiers=[];afficher();form.reset();bouton.textContent='Rapport envoyé \u2713';
+        setTimeout(function(){bouton.disabled=false;bouton.textContent='Envoyer mon rapport';},4000);
+      }else{
+        message((j&&j.msg)||"L'envoi a échoué. Appelez-nous au 01 56 04 19 96.",'ko');
+        bouton.disabled=false;bouton.textContent='Envoyer mon rapport';
+      }
+    }).catch(function(){
+      message("L'envoi a échoué. Vérifiez votre connexion ou appelez-nous au 01 56 04 19 96.",'ko');
+      bouton.disabled=false;bouton.textContent='Envoyer mon rapport';
+    });
+  });
+})();
+</script>
 </body>
 </html>
