@@ -221,6 +221,20 @@ body.no-scroll { overflow: hidden; }
 .bulb-poire::after { content:''; position:absolute; top:25%; left:42%; width:16%; height:55%; background:linear-gradient(to bottom, rgba(255,210,80,0.6), rgba(255,180,40,0.2)); filter:blur(1px); }
 
 .hero-content { position:relative; z-index:2; }
+/* Bandeau « Remise en conformité » sous l'accroche, apparaît avec le reste de l'accueil */
+.bandeau-conformite { display:flex; align-items:center; gap:12px; box-sizing:border-box; width:min(92vw,380px); margin:0 auto 1.2rem; padding:12px 14px; text-align:left; text-decoration:none; color:#fff;
+  border-radius:14px; border:1.5px solid var(--or-clair); background:linear-gradient(135deg,rgba(201,168,76,.28),rgba(22,32,64,.9)); box-shadow:0 0 22px rgba(240,208,128,.35);
+  opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease, box-shadow .3s; -webkit-tap-highlight-color:transparent; }
+.hero-visible .bandeau-conformite { opacity:1; transform:translateY(0); transition-delay:1s; }
+.bandeau-conformite:hover, .bandeau-conformite:focus-visible { box-shadow:0 0 30px rgba(240,208,128,.6); }
+.bc-voyant { flex:none; width:14px; height:14px; border-radius:50%; background:#d6402f; box-shadow:0 0 0 0 rgba(214,64,47,.7); animation:bc-pulse 2s infinite; }
+@keyframes bc-pulse { 70%{box-shadow:0 0 0 10px rgba(214,64,47,0)} 100%{box-shadow:0 0 0 0 rgba(214,64,47,0)} }
+.bc-texte small { display:block; font-family:'Barlow',sans-serif; font-size:.66rem; letter-spacing:.16em; text-transform:uppercase; color:var(--or-clair); font-weight:600; }
+.bc-texte b { display:block; font-family:'Playfair Display',serif; font-size:1.12rem; line-height:1.2; }
+.bc-texte em { display:block; font-style:normal; font-family:'Barlow',sans-serif; font-size:.82rem; color:#aeb7cc; margin-top:2px; }
+.bc-fleche { margin-left:auto; font-size:1.4rem; color:var(--or-clair); }
+@media (prefers-reduced-motion:reduce){ .bc-voyant { animation:none; } }
+
 /* Encadré « Mon espace » : en haut à droite du bouton d'urgence, centré dans la marge de droite */
 .hero-plate-wrap { position:relative; display:inline-block; vertical-align:top; }
 .mon-espace-cep { position:absolute; z-index:3; top:0; left:calc(100% + (100vw - 100%) / 4); transform:translateX(-50%);
@@ -953,6 +967,7 @@ footer { background:#060a10; padding:4rem 5vw 2rem; border-top:1px solid rgba(25
     <div class="hero-plate-wrap"><a class="hero-logo-btn" onclick="heroLogoClick()"><div class="logo-bumper"><svg class="logo-bumper-text" viewBox="0 0 300 380" preserveAspectRatio="xMidYMin meet"><defs><path id="qsn-curve" d="M 0 200 A 150 150 0 0 1 300 200" fill="none"/></defs><text><textPath href="#qsn-curve" startOffset="50%" text-anchor="middle">Qui sommes-nous</textPath></text></svg><div class="logo-losange"><div class="logo-losange-inner"><span class="logo-cep">CEP</span><span class="logo-75">75</span></div></div></div></a><a class="mon-espace-cep" href="mon-espace.html">Mon<br>espace</a></div>
     <p class="hero-eye">Électricien spécialisé CHR · Paris & Île-de-France</p>
     <p class="hero-mobile-tagline">Spécialiste électrique CHR<br>Paris &amp; Île-de-France</p>
+    <a class="bandeau-conformite" href="conformite.html"><span class="bc-voyant" aria-hidden="true"></span><span class="bc-texte"><small>Après le bureau de contrôle</small><b>Remise en conformité</b><em>Rapport reçu ? On lève vos réserves.</em></span><span class="bc-fleche" aria-hidden="true">&rarr;</span></a>
     <p class="hero-sub">Éclairage de salle, guirlandes de terrasse, tableau électrique, mise aux normes, dépannage — CEP est l'électricien de référence des restaurants parisiens.</p>
     <div class="hero-cta">
       <a class="btn btn-gold" onclick="scrollTo('#boutique')" style="cursor:pointer">Voir la boutique</a>
