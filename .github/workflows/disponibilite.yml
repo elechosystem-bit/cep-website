@@ -1,0 +1,16 @@
+# Le site CEP répond-il ? Contrôle chaque heure (un site hors service est pénalisé par Google).
+name: Disponibilité du site
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+jobs:
+  rapide:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vérifier que le site répond
+        run: python3 outils/verif_seo.py --rapide

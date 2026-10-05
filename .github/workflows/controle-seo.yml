@@ -1,0 +1,20 @@
+# Contrôle quotidien du référencement du site CEP (lecture seule).
+# Une ERREUR (page absente, titre manquant, lien cassé…) fait échouer l'exécution :
+# GitHub envoie alors un mail au propriétaire du dépôt. Les avertissements sont dans le journal.
+name: Contrôle référencement
+
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  controle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit complet du site en ligne
+        run: python3 outils/verif_seo.py
