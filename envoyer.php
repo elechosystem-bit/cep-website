@@ -58,6 +58,13 @@ $urgence = champ('urgence', 80);
 $sujetDemande = champ('probleme', 120);
 $message = champ('message', 4000);
 
+// Anti-démarchage : un vrai client ne colle pas de lien dans sa demande, on les refuse.
+foreach ([$nom, $etab, $adresse, $urgence, $sujetDemande, $message] as $texte) {
+    if (preg_match('~(?:https?:|hxxps?:|www\.)~i', $texte)) {
+        repondre(false, 'Merci de retirer les liens (adresses de sites) de votre message.', 400);
+    }
+}
+
 if (!in_array($type, ['devis', 'depannage', 'rapport'], true)) {
     repondre(false, 'Demande incomplète.', 400);
 }
